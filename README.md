@@ -1,15 +1,16 @@
 # Bluetooth Pressure Transducer
-This is my Ramadhan 1444H side project. The idea was already floating in my mind, but I can't start the project because lack of free time. Purpose of this project is to create Bluetooth Pressure Transducer that can be connected to pressure profiling apps (Coffee Flow & Odyssey Espresso).
+The purpose of this project is to create Bluetooth Pressure Transducer that can be connected to pressure profiling apps (SE Profiler, Coffee Flow & Odyssey Espresso).
 
-The target espresso machine was my Flair 58. This espresso maker is having G1/8 fitting for the pressure gauge.
-
+The target espresso machine was my Flair 58. This espresso maker has a G1/8 fitting for the pressure gauge.
 
 
 ## Diagram
+Following diagram depict the configuration of the current implementation.
+
 ```mermaid
 flowchart BT
     A(Analog Pressure\nTransmitter) <-->|wired| B(ESP32 Dev Board)
-    B<-->|BLE|C(<b>Android/iPhone</b>\nSE Profiler, Coffee Flow, Odyssey Espresso Apps)
+    B<.->|BLE/Bluetooth|C(<b>Android/iPhone</b>\nSE Profiler, Coffee Flow, Odyssey Espresso Apps)
 ```
 
 ## Bill of Material
@@ -51,12 +52,12 @@ Download the binary provided in the release section. The binary will consists of
 Run following command (some parts will need you to adjust to match your own environment):
 
 ```shell
-{PATH_TO_ESPTOOL}/esptool --chip esp32 --port "{CHANGE_TO_YOUR_DEVICE_PORT}" --baud 115200  --before default_reset --after hard_reset write_flash  -z --flash_mode dio --flash_freq 80m --flash_size 4MB 0x1000 BluetoothPressureTransducer_InternalLCD.ino.bootloader.bin 0x8000 BluetoothPressureTransducer_InternalLCD.ino.partitions.bin 0xe000 "{PATH_TO_YOUR_ESP32_PACKAGE}/packages/esp32/hardware/esp32/2.0.7/tools/partitions/boot_app0.bin" 0x10000 BluetoothPressureTransducer_InternalLCD.ino.bin 
+{PATH_TO_ESPTOOL}/esptool --chip esp32 --port "{CHANGE_TO_YOUR_DEVICE_PORT}" --baud 115200  --before default_reset --after hard_reset write_flash  -z --flash_mode dio --flash_freq 80m --flash_size 4MB 0x1000 BluetoothPressureTransducer_InternalLCD.ino.bootloader.bin 0x8000 BluetoothPressureTransducer_InternalLCD.ino.partitions.bin 0xe000 "{PATH_TO_YOUR_ESP32_PACKAGE}/packages/esp32/hardware/esp32/2.0.7/tools/partitions/boot_app0.bin" 0x10000 BluetoothPressureTransducer_InternalLCD.ino.bin
 ```
 
 For your reference, in my environment (OSX) will need to run using following parameters:
 ```shell
-"/Users/sybond/Library/Arduino15/packages/esp32/tools/esptool_py/4.5.1/esptool" --chip esp32 --port "/dev/cu.usbserial-0001" --baud 115200  --before default_reset --after hard_reset write_flash  -z --flash_mode dio --flash_freq 80m --flash_size 4MB 0x1000 "/private/var/folders/pz/jkl6w3fs45v88wcck8qtfhw00000gn/T/arduino/sketches/4E4A8C476EDC2D7C933461960E7BD641/BluetoothPressureTransducer_InternalLCD.ino.bootloader.bin" 0x8000 "/private/var/folders/pz/jkl6w3fs45v88wcck8qtfhw00000gn/T/arduino/sketches/4E4A8C476EDC2D7C933461960E7BD641/BluetoothPressureTransducer_InternalLCD.ino.partitions.bin" 0xe000 "/Users/sybond/Library/Arduino15/packages/esp32/hardware/esp32/2.0.7/tools/partitions/boot_app0.bin" 0x10000 "/private/var/folders/pz/jkl6w3fs45v88wcck8qtfhw00000gn/T/arduino/sketches/4E4A8C476EDC2D7C933461960E7BD641/BluetoothPressureTransducer_InternalLCD.ino.bin" 
+"/Users/sybond/Library/Arduino15/packages/esp32/tools/esptool_py/4.5.1/esptool" --chip esp32 --port "/dev/cu.usbserial-0001" --baud 115200  --before default_reset --after hard_reset write_flash  -z --flash_mode dio --flash_freq 80m --flash_size 4MB 0x1000 "/private/var/folders/pz/jkl6w3fs45v88wcck8qtfhw00000gn/T/arduino/sketches/4E4A8C476EDC2D7C933461960E7BD641/BluetoothPressureTransducer_InternalLCD.ino.bootloader.bin" 0x8000 "/private/var/folders/pz/jkl6w3fs45v88wcck8qtfhw00000gn/T/arduino/sketches/4E4A8C476EDC2D7C933461960E7BD641/BluetoothPressureTransducer_InternalLCD.ino.partitions.bin" 0xe000 "/Users/sybond/Library/Arduino15/packages/esp32/hardware/esp32/2.0.7/tools/partitions/boot_app0.bin" 0x10000 "/private/var/folders/pz/jkl6w3fs45v88wcck8qtfhw00000gn/T/arduino/sketches/4E4A8C476EDC2D7C933461960E7BD641/BluetoothPressureTransducer_InternalLCD.ino.bin"
 ```
 Currently I have 2 versions of firmware:
 1. For 0-200psi pressure transmitter

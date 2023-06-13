@@ -36,6 +36,8 @@ The analog pressure transmitter wiring will have :
 - Ground
 - Output
 
+[@frontmesh](https://github.com/frontmesh) has provided some information regarding two types of G1/8 fittings, short and long. I'm guessing Flair 58 is using the lengthy version. It would be preferable if you could have this long-fitting version &mdash; and please share it with us.
+
 ### Wiring
 From above schematic, we will need to connect Pressure Transmitter to `5V`, `GND` and some analog PIN (I choose `ADC19`/`GPIO26`).
 
@@ -61,4 +63,4 @@ For your reference, in my environment (OSX) will need to run using following par
 ```
 Currently I have 2 versions of firmware:
 1. For 0-200psi pressure transmitter
-2. For 0-1,6MPa pressure transmitter (I recently purchase from [here](https://www.aliexpress.com/item/1005004559608411.html))
+2. For 0-1,6MPa pressure transmitter (I recently purchase from [here](https://www.aliexpress.com/item/1005004559608411.html); make sure to put note about G1/8 fitting)

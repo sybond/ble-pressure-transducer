@@ -10,7 +10,7 @@ Following diagram depict the configuration of the current implementation.
 ```mermaid
 flowchart BT
     A(Analog Pressure\nTransmitter) <-->|wired| B(ESP32 Dev Board)
-    B<.->|BLE/Bluetooth|C(<b>Android/iPhone</b>\nSE Profiler, Coffee Flow, Odyssey Espresso Apps)
+    B<.->|BLE/Bluetooth|C(Android/iPhone\nSE Profiler, Coffee Flow, Odyssey Espresso Apps)
 ```
 
 ## Bill of Material
@@ -42,7 +42,7 @@ The analog pressure transmitter wiring will have :
 From above schematic, we will need to connect Pressure Transmitter to `5V`, `GND` and some analog PIN (I choose `ADC19`/`GPIO26`).
 
 ### Code Part
-At the moment I will put only the binary to this repository.
+At the moment I will put only the binary to this repository. However the snippet for pressure calculation is availbale in the repository.
 
 ### Flashing Firmware using ESPTOOL
 Download the binary provided in the release section. The binary will consists of following files:
@@ -62,5 +62,17 @@ For your reference, in my environment (OSX) will need to run using following par
 "/Users/sybond/Library/Arduino15/packages/esp32/tools/esptool_py/4.5.1/esptool" --chip esp32 --port "/dev/cu.usbserial-0001" --baud 115200  --before default_reset --after hard_reset write_flash  -z --flash_mode dio --flash_freq 80m --flash_size 4MB 0x1000 "/private/var/folders/pz/jkl6w3fs45v88wcck8qtfhw00000gn/T/arduino/sketches/4E4A8C476EDC2D7C933461960E7BD641/BluetoothPressureTransducer_InternalLCD.ino.bootloader.bin" 0x8000 "/private/var/folders/pz/jkl6w3fs45v88wcck8qtfhw00000gn/T/arduino/sketches/4E4A8C476EDC2D7C933461960E7BD641/BluetoothPressureTransducer_InternalLCD.ino.partitions.bin" 0xe000 "/Users/sybond/Library/Arduino15/packages/esp32/hardware/esp32/2.0.7/tools/partitions/boot_app0.bin" 0x10000 "/private/var/folders/pz/jkl6w3fs45v88wcck8qtfhw00000gn/T/arduino/sketches/4E4A8C476EDC2D7C933461960E7BD641/BluetoothPressureTransducer_InternalLCD.ino.bin"
 ```
 Currently I have 2 versions of firmware:
-1. For 0-200psi pressure transmitter
+1. For 0-200psi pressure transmitter (discontinued)
 2. For 0-1,6MPa pressure transmitter (I recently purchase from [here](https://www.aliexpress.com/item/1005004559608411.html); make sure to put note about G1/8 fitting)
+
+## Next development
+The current and future firmware will support multiple pressure sensors. The support will be possible by sending config command (or OTA update) to the device. Config command will consist following parameters:
+1. Minimum voltage (`minVoltage` default value is `0.5`)
+2. Maximum voltage (`maxVoltage` default value is `4.5`)
+3. Maximum milibar (`maxMilibar` default value is `16000`)
+
+The default value is the working parameter for current pressure sensor I use (0.5V-4,5V, 0-1,6Mpa). For example new sensor with tech specification : 0V-5V, 0-200psi. Will have corresponding parameters:
+1. `minVoltage` = `0.0`
+2. `maxVoltage` = `5.0`
+3. `maxMilibar` = `13790`
+

@@ -13,6 +13,10 @@
             - Adding logo
             - New calculation of pressure, since in LOLIN32 they have 5V input for sensor
  2023/05/01 - Allow to display pressure without waiting BLE connected
+ 2024/02/23 - Saving last minVoltage into NVS
+ 2024/02/24 - Revisit pressure calculation
+            - Adding minVoltage, maxVoltage, maxMilibar to NVS
+            - Adding characteristic for future use, currently to reset NVS stored value to default value
 
 */
 #include <BLEDevice.h>
@@ -23,9 +27,12 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+#include <Preferences.h>
+
 BLEServer* pServer = NULL;
 BLECharacteristic* pCharPressure = NULL;
 BLECharacteristic* pCharZeroPressure = NULL;
+BLECharacteristic* pCharPressureConfig = NULL;
 BLECharacteristic* pCharBatt = NULL;
 BLECharacteristic* pCharLog = NULL;
 BLECharacteristic* pCharMFC = NULL;
@@ -39,39 +46,28 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
+bool printLog = false;
 int BattLevel = 100;
+int32_t value = 0xB6032823;
+int32_t value2 = 0x00;
+int barPotentio = 0;
 int counter = 0;
 
-float setZeroVol = 0.47;
-float voltage = 0;
+float minVoltage = 0.5;
+float maxVoltage = 4.5;
+float currVoltage = 0;
+long maxMilibar = 16000;  //default 16bar
 
+int Potentio = 0;
+float currBar = 0.0;
+
+uint8_t pressData[4] = { 0x03, 0xb6, 0x0, 0x0 };
 char text[200];
 char dev_name[20];
+Preferences configNVS;
 
-class MyServerCallbacks : public BLEServerCallbacks {
-  void onConnect(BLEServer* pServer) {
-    deviceConnected = true;
-  };
-  void onDisconnect(BLEServer* pServer) {
-    deviceConnected = false;
-  }
-};
 
-class MyPressChCallbacks : public BLECharacteristicCallbacks {
-  void onWrite(BLECharacteristic* pCharacteristic) {
-
-    setZeroVol = voltage;
-    Serial.printf("Set sero vol to %.2f\n", voltage);
-    // std::string rxValue = pCharacteristic->getValue();
-    // if (rxValue.length() > 0) {
-    //   Serial.print("Received Value: ");
-    //   for (int i = 0; i < rxValue.length(); i++)
-    //     Serial.print(rxValue[i], HEX);
-    //   Serial.println();
-    // }
-  }
-};
-
+#define fw_ver "v2.6 WL"
 
 static unsigned char logosybond_led_bits[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xe0, 0x01, 0x00, 0x00, 0x00, 0x70,
@@ -113,6 +109,17 @@ static unsigned char logosybond_led_bits[] = {
   0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
+
+class MyServerCallbacks : public BLEServerCallbacks {
+};
+
+class MyPressChCallbacks : public BLECharacteristicCallbacks {
+};
+
+class MyConfigChCallbacks : public BLECharacteristicCallbacks {
+};
+
+
 void prepDisplay() {
   Wire.begin(5, 4);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -134,30 +141,28 @@ void prepDisplay() {
 }
 
 void setup() {
-}
-
-int Potentio = 0;
-float currBar = 0.0;
-
-void loop() {
+ // ----- stripped -------
 }
 
 float getSensorvalue(int analoge) {
   int adc_value_final = 0;
   int adc_samples = 64;
+  int min_adc = (minVoltage * 4095) / maxVoltage;
   for (int i = 0; i < adc_samples; i++) {
     adc_value_final += analogRead(analoge);
   }
   adc_value_final /= adc_samples;
-  int sensorVal = adc_value_final;
-  voltage = (sensorVal * 4.5) / 4095.0;
-  float zeroVol = voltage - setZeroVol;
-  if (zeroVol < 0) {
-    zeroVol = 0;
+  if (adc_value_final < min_adc) { adc_value_final = min_adc; }
+  currVoltage = (adc_value_final * 4.5) / 4095.0;
+  float bar = map(adc_value_final, min_adc, 4095, 0, maxMilibar * 10);
+  if (printLog) {
+    Serial.printf("Analog:%d, Vol:%.2fV, miliBar:%.2f\n", adc_value_final, currVoltage, bar / 10);
   }
-  float psiVal = ((zeroVol)*200) / (4.5 - setZeroVol);  //conversion equation to convert analog reading to psi
-  float pressure_bar = ((zeroVol)*16000) / (4.5 - setZeroVol);  // in milibar
-  Serial.printf("Analog:%d, Vol:%.2fV, psi:%.2f, miliBar:%.2f\n", sensorVal, voltage, psiVal, pressure_bar);
   delay(100);
-  return pressure_bar;
+  return bar / 10;
+}
+
+//--------- the main loop -------
+void loop() {
+// ------ stripped --------------
 }

@@ -1,3 +1,4 @@
+
 # Bluetooth Pressure Transducer
 The purpose of this project is to create Bluetooth Pressure Transducer that can be connected to pressure profiling apps (SE Profiler, Coffee Flow & Odyssey Espresso).
 
@@ -25,6 +26,8 @@ I'm using this board because there is OLED embedded in the board so we just need
 The display component will be used to display the current status of the device. Whether connected to the app or not. Also to display current pressure reading by the analog pin.
 
 ![ESP32 LOLIN32](https://i0.wp.com/randomnerdtutorials.com/wp-content/uploads/2019/07/lolin32-oled-pinout.jpg)
+
+![enter image description here](https://i0.wp.com/randomnerdtutorials.com/wp-content/uploads/2019/07/lolin32-oled-pinout.jpg
 
 ![ESP32 LOLIN32](https://i0.wp.com/randomnerdtutorials.com/wp-content/uploads/2019/07/Lolin32-OLED.jpg)
 
@@ -65,14 +68,23 @@ Currently I have 2 versions of firmware:
 1. For 0-200psi pressure transmitter (discontinued)
 2. For 0-1,6MPa pressure transmitter (I recently purchase from [here](https://www.aliexpress.com/item/1005004559608411.html); make sure to put note about G1/8 fitting)
 
-## Next development
-The current and future firmware will support multiple pressure sensors. The support will be possible by sending config command (or OTA update) to the device. Config command will consist following parameters:
+## Config Characteristic
+Latest version of the firmware (starting from V2.6), now support of Config Characteristic (`873ae82d-4c5a-4342-b539-9d900bf7ebd0`) . The characteristic expecting following data:
+
+| Config parameter | Format | Sample |
+|:--------|:-------------| :------- |
+| minVoltage | `00 {4 bytes float}` | `00 b8 1e 05 3f` = set minVoltage to 0,52 |
+| maxVoltage | `01 {4 bytes float}` | `01 00 00 90 40` = set maxVoltage to 4,5|
+| maxMilibar | `02 {8 bytes long}` | `02 80 3e 00 00 00 00 00 00` = set maxMilibar to 16000|
+
+Following is the default parameters value:
 1. Minimum voltage (`minVoltage` default value is `0.5`)
 2. Maximum voltage (`maxVoltage` default value is `4.5`)
 3. Maximum milibar (`maxMilibar` default value is `16000`)
 
-The default value is the working parameter for current pressure sensor I use (0.5V-4,5V, 0-1,6Mpa). For example new sensor with tech specification : 0V-5V, 0-200psi. Will have corresponding parameters:
+The default value is the working parameter for current pressure sensor I use (0.5V-4,5V, 0-1,6Mpa).
+
+For example new sensor with tech specification : 0V-5V, 0-200psi. Will have corresponding parameters:
 1. `minVoltage` = `0.0`
 2. `maxVoltage` = `5.0`
 3. `maxMilibar` = `13790`
-

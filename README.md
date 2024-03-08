@@ -91,3 +91,5 @@ Other option starting from v3.0, you can configure the parameters via serial int
 
 1. Just connect to the ESP32 serial using 115200 baud rate.
 2. Type `info`. The syntax structure should be self explaining from this point.
+
+[![Example usage](https://img.youtube.com/vi/-LI7Phg-lwg/0.jpg)](https://youtu.be/-LI7Phg-lwg)

@@ -27,8 +27,6 @@ The display component will be used to display the current status of the device. 
 
 ![ESP32 LOLIN32](https://i0.wp.com/randomnerdtutorials.com/wp-content/uploads/2019/07/lolin32-oled-pinout.jpg)
 
-![enter image description here](https://i0.wp.com/randomnerdtutorials.com/wp-content/uploads/2019/07/lolin32-oled-pinout.jpg
-
 ![ESP32 LOLIN32](https://i0.wp.com/randomnerdtutorials.com/wp-content/uploads/2019/07/Lolin32-OLED.jpg)
 
 ### Analog Pressure Transmitter 5V DC
@@ -69,22 +67,27 @@ Currently I have 2 versions of firmware:
 2. For 0-1,6MPa pressure transmitter (I recently purchase from [here](https://www.aliexpress.com/item/1005004559608411.html); make sure to put note about G1/8 fitting)
 
 ## Config Characteristic
-Latest version of the firmware (starting from V2.6), now support of Config Characteristic (`873ae82d-4c5a-4342-b539-9d900bf7ebd0`) . The characteristic expecting following data:
+Latest version of the firmware, now support of write Config Characteristic (`873ae82d-4c5a-4342-b539-9d900bf7ebd0`). The purpose of this characteristic is to able customized sensor reading based on the manual calibration. The characteristic expecting following data:
 
 | Config parameter | Format | Sample |
 |:--------|:-------------| :------- |
-| minVoltage | `00 {4 bytes float}` | `00 b8 1e 05 3f` = set minVoltage to 0,52 |
-| maxVoltage | `01 {4 bytes float}` | `01 00 00 90 40` = set maxVoltage to 4,5|
+| minADC | `00 {4 bytes int}` | `00 c7 01 00 00` = set minVoltage to 455|
+| maxADC | `01 {4 bytes int}` | `01 34 0d 00 00` = set maxADC to 3380|
 | maxMilibar | `02 {8 bytes long}` | `02 80 3e 00 00 00 00 00 00` = set maxMilibar to 16000|
 
+The parameters will be involved into following calculation to determine pressure value:
+
+`pressure in milibar =  (analogReading - minADC) * (maxMilibar) / (maxADC - minADC);`
+
 Following is the default parameters value:
-1. Minimum voltage (`minVoltage` default value is `0.5`)
-2. Maximum voltage (`maxVoltage` default value is `4.5`)
-3. Maximum milibar (`maxMilibar` default value is `16000`)
+1. Minimum ADC (`minADC` default value is `455`)
+2. Maximum ADC (`maxADC` default value is `3380`)
+3. Maximum milibar (`maxMilibar` default value is `9000`)
 
 The default value is the working parameter for current pressure sensor I use (0.5V-4,5V, 0-1,6Mpa).
 
-For example new sensor with tech specification : 0V-5V, 0-200psi. Will have corresponding parameters:
-1. `minVoltage` = `0.0`
-2. `maxVoltage` = `5.0`
-3. `maxMilibar` = `13790`
+## Serial Config Interface
+Other option starting from v3.0, you can configure the parameters via serial interface.
+
+1. Just connect to the ESP32 serial using 115200 baud rate.
+2. Type `info`. The syntax structure should be self explaining from this point.

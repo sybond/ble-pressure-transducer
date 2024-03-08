@@ -17,6 +17,10 @@
  2024/02/24 - Revisit pressure calculation
             - Adding minVoltage, maxVoltage, maxMilibar to NVS
             - Adding characteristic for future use, currently to reset NVS stored value to default value
+ 2024/02/28 - Adding new calibrated point for ADC known value for 9 Bar pressure
+ 2024/03/08 - Rework on configuration part. Removing `minVoltage` and `maxVoltage`.
+            - Adding serial com settings
+            - All pressure calculation now should be configurable using `map(analogValue,minADC,maxADC,0,maxMilibar)`.
 
 */
 #include <BLEDevice.h>

@@ -89,7 +89,5 @@ The default value is the working parameter for current pressure sensor I use (0.
 ## Serial Config Interface
 Other option starting from v3.0, you can configure the parameters via serial interface.
 
-1. Just connect to the ESP32 serial using 115200 baud rate.
+1. Just connect to the ESP32 Bluetooth using Serial Bluetooth Terminal ([Android](https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal)) or another similiar apps.
 2. Type `info`. The syntax structure should be self explaining from this point.
-
-[![Example usage](https://img.youtube.com/vi/-LI7Phg-lwg/0.jpg)](https://youtu.be/-LI7Phg-lwg)
